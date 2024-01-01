@@ -4,13 +4,13 @@ from PIL import ImageGrab
 
 # screenshot = np.array(ImageGrab.grab((617, 480, 1320, 876)))  # RGB format
 
-image = cv.imread("image5.jpg")
+image = cv.imread("image2.jpg")
 screenshot = cv.cvtColor(image[480:876, 617:1320], cv.COLOR_BGR2RGB)
 
 hsv = cv.cvtColor(screenshot, cv.COLOR_RGB2HSV)
 
 lower_bound = np.array([148, 240, 104], dtype=np.uint8)
-upper_bound = np.array([160, 252, 130], dtype=np.uint8)
+upper_bound = np.array([160, 255, 130], dtype=np.uint8)
 
 mask = cv.inRange(hsv, lower_bound, upper_bound)
 result = cv.bitwise_and(screenshot, screenshot, mask=mask)
@@ -31,7 +31,12 @@ for contour in contours:
     else:
         cX, cY = 0, 0
 
-    cv.circle(mask, (cX, cY), 20, (255, 255, 255), 2)
+
+
+
+
+
+    cv.circle(screenshot, (cX, cY), 20, (255, 0, 0), 2)
 
 # ------------------------------------------------
 

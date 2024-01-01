@@ -1,0 +1,37 @@
+Processing order.
+1. Find Game Window
+(Loop)
+2. Capture an image of the highway
+3. Scan the screen for:
+    a. Purple tiles.
+    b. Orange tiles.
+    c. Release tiles. (later)
+    d. Held note trails. (later)
+4. Find the locations of each of those items.
+5. Calculate the time that the note must be pressed.
+6. Insert that data into a collection using the format: (lane number, key action, timestamp)
+7. Check if the oldest notes in the collection have reached their time to be hit.
+8. Input any note keys required.
+
+Notes.
+Analyzing the screen every cycle is unnecessary as notes will be readable for around 1 second.
+Data collection type can be similar to a ring buffer. Python may not need this level of optimization.
+Release tiles and Held note trails may need more advanced image processing than a simple color mask,
+        so they will be a future addition to the program.
+
+
+too_doooo.
+Record the timing of the highway.
+    How does the relationship between timing and height of the note change as the height changes?
+    Evenly spaced notes in time will not appear evenly spaced according to their height.
+    The distance of a gap between notes will have higher weight on the timing of the gap if the distance is measured
+            higher into the highway.
+
+
+The top of the highway is approx. 381 pixels from the bottom of the highway.
+Notes at the top of a 1/5 and 5/5 lane are approx. 121 pixels closer to the center than when they are at the bottom.
+Notes at the top of a 2/5 and 4/5 lane are approx. 64 pixels closer to the center than when they are at the bottom.
+Notes at the top of a 3/5 lane are always aligned at the center.
+
+
+
