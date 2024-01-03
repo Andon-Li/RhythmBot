@@ -33,5 +33,11 @@ Notes at the top of a 1/5 and 5/5 lane are approx. 121 pixels closer to the cent
 Notes at the top of a 2/5 and 4/5 lane are approx. 64 pixels closer to the center than when they are at the bottom.
 Notes at the top of a 3/5 lane are always aligned at the center.
 
+Notes take approx 1 second from top of highway to bottom of highway.
+
+Exclude centers that lie outside of the highway.
+
+Scan for high contrast areas for release notes
+and lines
 
 

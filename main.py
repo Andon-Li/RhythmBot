@@ -1,11 +1,14 @@
 import cv2 as cv
 import numpy as np
 from PIL import ImageGrab
+import time
 
-# screenshot = np.array(ImageGrab.grab((617, 480, 1320, 876)))  # RGB format
+# --------------------------------
+# screenshot = np.array(ImageGrab.grab((617, 440, 1320, 890)))  # RGB format
 
-image = cv.imread("image2.jpg")
-screenshot = cv.cvtColor(image[480:876, 617:1320], cv.COLOR_BGR2RGB)
+image = cv.imread("image6.jpg")
+screenshot = cv.cvtColor(image[440:890, 617:1320], cv.COLOR_BGR2RGB)
+# --------------------------------
 
 hsv = cv.cvtColor(screenshot, cv.COLOR_RGB2HSV)
 
@@ -30,11 +33,6 @@ for contour in contours:
         cY = int(M["m01"] / M["m00"])
     else:
         cX, cY = 0, 0
-
-
-
-
-
 
     cv.circle(screenshot, (cX, cY), 20, (255, 0, 0), 2)
 
