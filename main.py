@@ -3,44 +3,56 @@ import numpy as np
 from PIL import ImageGrab
 import time
 
-# --------------------------------
-# screenshot = np.array(ImageGrab.grab((617, 440, 1320, 890)))  # RGB format
 
-image = cv.imread("image6.jpg")
-screenshot = cv.cvtColor(image[440:890, 617:1320], cv.COLOR_BGR2RGB)
-# --------------------------------
+video = cv.VideoCapture("Video2_5fps_WithInput.mp4")
 
-hsv = cv.cvtColor(screenshot, cv.COLOR_RGB2HSV)
+while True:
+    # screenshot in BGR format
+    success, screenshot = video.read()
+    screenshot = screenshot[470:890, 617:1320]
 
-lower_bound = np.array([148, 240, 104], dtype=np.uint8)
-upper_bound = np.array([160, 255, 130], dtype=np.uint8)
+    # --------------------------------
 
-mask = cv.inRange(hsv, lower_bound, upper_bound)
-result = cv.bitwise_and(screenshot, screenshot, mask=mask)
+    hsv = cv.cvtColor(screenshot, cv.COLOR_BGR2HSV)
 
-# ------------------------------------------------
+    lower_bound_purple = np.array([148, 240, 104])
+    upper_bound_purple = np.array([160, 255, 130])
 
-kernel = np.ones((5, 5), np.uint8)
-mask = cv.dilate(mask, kernel, iterations=1)
+    mask_purple = cv.inRange(hsv, lower_bound_purple, upper_bound_purple)
 
-contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    lower_bound_orange = np.array([2, 193, 216])
+    upper_bound_orange = np.array([22, 255, 240])
 
-for contour in contours:
-    M = cv.moments(contour)
+    mask_orange = cv.inRange(hsv, lower_bound_orange, upper_bound_orange)
 
-    if M["m00"] != 0:
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
-    else:
-        cX, cY = 0, 0
+    combined_mask = cv.bitwise_or(mask_purple, mask_orange)
 
-    cv.circle(screenshot, (cX, cY), 20, (255, 0, 0), 2)
+    result = cv.bitwise_and(screenshot, screenshot, mask=combined_mask)
 
-# ------------------------------------------------
+    # ------------------------------------------------
 
-cv.imshow('Original Image', cv.cvtColor(screenshot, cv.COLOR_RGB2BGR))
-cv.imshow('Mask', mask)
-cv.imshow('Result', result)
+    kernel = np.ones((5, 5), np.uint8)
+    combined_mask = cv.dilate(combined_mask, kernel, iterations=1)
+    combined_mask = cv.erode(combined_mask, kernel, iterations=1)
 
-cv.waitKey(0)
-cv.destroyAllWindows()
+    contours, _ = cv.findContours(combined_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+    for contour in contours:
+        M = cv.moments(contour)
+
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+        else:
+            cX, cY = 0, 0
+
+        cv.circle(screenshot, (cX, cY), 20, (255, 0, 0), 2)
+
+    # ------------------------------------------------
+
+    cv.imshow('Original Image', screenshot)
+    cv.imshow('Mask', combined_mask)
+    cv.imshow('Result', result)
+
+    if cv.waitKey() == ord('q'):
+        quit()
