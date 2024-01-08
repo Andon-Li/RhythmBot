@@ -42,3 +42,22 @@ and lines
 
 Vampire - Olivia Rodrigo
 605 Notes
+
+I - Kendrick Lamar
+~845 Notes
+
+##########################################################################
+New Approach - Average color of center of lanes.
+Crop image to only include area of the screen where sustain tails occupy.
+Take the average of every row of pixels.
+Categorize the average color into categories of each type of tile.
+
+Challenges:
+The centers of each lane are not clean rectangles. They are much closer to parallelogram.
+The true shape of the center of the lanes are parallelograms while also thinning out at the top.
+
+The color of each tile are not constant.
+The color ranges must be carefully tuned
+
+Simply color categories will result in tiles existing where it is impossible. eg: Sustain before any note as been played.
+
