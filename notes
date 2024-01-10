@@ -61,3 +61,5 @@ The color ranges must be carefully tuned
 
 Simply color categories will result in tiles existing where it is impossible. eg: Sustain before any note as been played.
 
+##########################################################################
+cv.blur() includes masked out black pixels
