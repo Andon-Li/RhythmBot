@@ -32,7 +32,12 @@ def crop_by_decimal(image: np.array, left: float, right: float, top: float, bott
     return image[top_px:bottom_px, left_px:right_px]
 
 
-def fillPoly_by_decimal(image, top_left, top_right, bottom_right, bottom_left):
+def fillPoly_by_decimal(image: np.array, points_d: list, color:tuple = (0, 0, 255)):
+    height, width = image.shape
+    temp = map(lambda a: (int(a[0]*height), int(a[1]*width)), points_d)
+
+    points_ = np.array([[[, ], [, ], [, ], [, ]]])
+    cv.fillPoly(image, points, color)
 
 
 
