@@ -2,16 +2,16 @@ import cv2 as cv
 import numpy as np
 
 
-def row_averages(image:np.array, placeholder: tuple = (0, 0, 0)):
-    height, width, channels = image.shape
+def row_averages(image: np.array, placeholder: tuple = (0, 0, 0)):
+    height, width, _ = image.shape
     average_colors = np.zeros((height, 3))
 
     for row_index in range(height):
         row = image[row_index, :]
         non_zero_pixels = row[row.sum(axis=1) != 0]
 
-        if non_zero_pixels:
-            average_colors[row_index] = np.mean(non_zero_pixels)
+        if non_zero_pixels.size > 0:
+            average_colors[row_index] = np.mean(non_zero_pixels, 0)
         else:
             average_colors[row_index] = np.array(placeholder)
 
@@ -22,7 +22,7 @@ def crop_by_decimal(image: np.array, left: float, right: float, top: float, bott
     if left >= right or top >= bottom:
         raise Exception("Negative range")
 
-    height, width, channels = image.shape
+    height, width, _ = image.shape
 
     left_px = int(width*left)
     right_px = int(width*right)
@@ -32,15 +32,10 @@ def crop_by_decimal(image: np.array, left: float, right: float, top: float, bott
     return image[top_px:bottom_px, left_px:right_px]
 
 
-def fillPoly_by_decimal(image: np.array, points_d: list, color:tuple = (0, 0, 255)):
-    height, width = image.shape
-    temp = map(lambda a: (int(a[0]*height), int(a[1]*width)), points_d)
-
-    points_ = np.array([[[, ], [, ], [, ], [, ]]])
-    cv.fillPoly(image, points, color)
-
-
-
+def fillPoly_by_decimal(image: np.array, points_d: np.array, color: tuple = (255, 255, 255)):
+    height, width, _ = image.shape
+    points_px = np.apply_along_axis(lambda a: (int(a[0]*width), int(a[1]*height)), 2, points_d)
+    cv.fillPoly(image, points_px, color)
 
 
 if __name__ == '__main__':
@@ -49,18 +44,21 @@ if __name__ == '__main__':
 
     while True:
         _, image = video.read()
-        cropped_image = crop_by_decimal(image, 0.5, 0.51, 0.44, 0.80)
+        # image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+        cropped_image = crop_by_decimal(image, 0.5, 0.507, 0.44, 0.70)
 
         mask = np.zeros_like(cropped_image)
 
-        # static points!
-        points = np.array([[[0, 0], [0, 10], [10, 10], [10, 0]]])
-        cv.fillPoly(mask, points, color=(255, 255, 255))
+        points = np.array([[[0, 0], [0.55, 0], [1, 1], [0, 1]]])
+        fillPoly_by_decimal(mask, points)
         masked_cropped_image = cv.bitwise_and(cropped_image, mask)
 
-        cv.imshow("image", image)
+        averages = row_averages(masked_cropped_image)
+
+        cv.imshow("image", image[400:900, 800:1100])
         cv.imshow("cropped image", cropped_image)
         cv.imshow("masked cropped image", masked_cropped_image)
+        cv.imshow("averages", averages)
 
         if cv.waitKey() == ord('q'):
             quit()
