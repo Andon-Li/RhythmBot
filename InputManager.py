@@ -1,19 +1,19 @@
-from time import sleep
+from multiprocessing import Queue
+from time import time, sleep
 import pydirectinput as pdi
 
 
-# game_element format: (lane_number(0-4), element_type(0-2), timestamp)
-def send_inputs(game_element_list, list_lock, bindings):
+# game_element format: (lane number(0-4), element type(0-2), UTC for input)
+def send_inputs(element_queue: Queue, bindings):
+    #         pdi.press('a')
+    #         pdi.press('s')
+    #         pdi.press('d')
+    #         pdi.click(button='left')
+    #         pdi.click(button='right')
+    #         counter += 1
+    #         print(counter)
     counter = 0
     while True:
-        if not game_element_list:
-            continue
-        with list_lock:
-            latest_element = game_element_list.pop(0)
-            pdi.press('a')
-            pdi.press('s')
-            pdi.press('d')
-            pdi.click(button='left')
-            pdi.click(button='right')
-            counter += 1
-            print(counter)
+        lane, el_type, time1 = element_queue.get(block=True)
+        counter += 1
+        print(counter)

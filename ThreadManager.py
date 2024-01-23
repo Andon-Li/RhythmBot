@@ -1,17 +1,18 @@
-import threading
+from multiprocessing import Process, Queue
 from ElementReader import read_elements
 from InputManager import send_inputs
 
-game_element_list = []
-list_lock = threading.Lock()
+if __name__ == '__main__':
+    element_queue = Queue(maxsize=100)
 
-bindings = ['a', 's', 'd', 'm_l', 'm_r']
+    bindings = ['a', 's', 'd', 'm_l', 'm_r']
 
-element_reader_thread = threading.Thread(target=read_elements, args=(game_element_list, list_lock), daemon=True)
-input_manager_thread = threading.Thread(target=send_inputs, args=(game_element_list, list_lock, bindings), daemon=True)
+    element_reader_process = Process(target=read_elements, args=(element_queue,))
+    input_manager_thread = Process(target=send_inputs, args=(element_queue, bindings))
 
-input_manager_thread.start()
-element_reader_thread.start()
+    element_reader_process.start()
+    input_manager_thread.start()
 
-input_manager_thread.join()
-element_reader_thread.join()
+    element_reader_process.join()
+    input_manager_thread.join()
+
