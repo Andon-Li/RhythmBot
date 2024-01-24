@@ -17,3 +17,4 @@ def send_inputs(element_queue: Queue, bindings):
         lane, el_type, time1 = element_queue.get(block=True)
         counter += 1
         print(counter)
+
