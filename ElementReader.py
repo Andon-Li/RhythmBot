@@ -1,6 +1,7 @@
 from multiprocessing import Process, Queue
 from time import time, sleep
-import pyautogui
+import win32gui
+import pygetwindow
 
 # game_element format: (lane_number(0-4), element_type(0-1), timestamp)
 # Element types:
@@ -9,5 +10,11 @@ import pyautogui
 
 
 def read_elements(element_queue):
-    while True:
+    window = pygetwindow.getWindowsWithTitle("Fortnite")[0]
+
+    print(window)
+    print(window.topleft)
+    print(window.bottomright)
+
+
 
