@@ -73,7 +73,7 @@ import cv2 as cv
 import numpy
 import numpy as np
 
-video = cv.VideoCapture("Video2_5fps_WithInput.mp4")
+video = cv.VideoCapture("2024-01-23 16-57-32.avi")
 
 while True:
     _, image = video.read()
