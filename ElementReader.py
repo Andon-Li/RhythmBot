@@ -11,7 +11,7 @@ import cv2 as cv
 import numpy as np
 
 
-def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec=0.0, height_dec=0.0):
+def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec, height_dec):
     monitor = sct.monitors[monitor_number]
     top_px = int(monitor["height"]*top_dec + monitor["top"])
     left_px = int(monitor["width"]*left_dec + monitor["left"])
@@ -31,7 +31,7 @@ def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec=0.0, height_dec=
 
 
 def read_elements(element_queue: Queue):
-    with (mss.mss() as sct):
+    with mss.mss() as sct:
         monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.15)
         while True:
             sct_img = sct.grab(monitor_dimensions)
@@ -41,41 +41,38 @@ def read_elements(element_queue: Queue):
             release_note_counter = 0
             note_found = False
 
-            for row in sct_img.pixels:
-
-                # row is a tuple, containing pixel elements
-                pixel_hsv = colorsys.rgb_to_hsv(*row[0])
+            for idx, row in enumerate(sct_img.pixels):
+                h, s, v = colorsys.rgb_to_hsv(*row[0])
 
                 # Purple Note
-                if 0.9 < pixel_hsv[0] < 0.92 and \
-                        0.95 < pixel_hsv[1] and \
-                        104 < pixel_hsv[2] < 111:
+                if 0.9 < h < 0.92 and \
+                        0.95 < s and \
+                        104 < v < 111:
                     note_found = True
 
                 # Orange Note ***not done****
-                elif 0.9 < pixel_hsv[0] < 0.92 and \
-                        0.95 < pixel_hsv[1] and \
-                        104 < pixel_hsv[2] < 111:
+                elif 0.045 < h < 0.055 and \
+                        0.97 < s and \
+                        224 < v < 235:
                     note_found = True
 
                 # Release Note
-                elif 0.82 < pixel_hsv[0] < 0.87 and \
-                        0.05 < pixel_hsv[1] < 0.22 and \
-                        210 < pixel_hsv[2]:
+                elif 0.82 < h < 0.87 and \
+                        0.05 < s < 0.22 and \
+                        210 < v:
                     if release_note_counter == 10:
                         print("release note")
-                        element_queue.put(())
+                        element_queue.put((1, 2, idx/monitor_dimensions["height"]))
                     else:
                         release_note_counter += 1
+
+                # Background
                 else:
                     release_note_counter = 0
                     if note_found:
                         print("NOTE")
-                        element_queue.put((0, 2, ))
+                        element_queue.put((0, 2, idx/monitor_dimensions["height"]))
                         note_found = False
 
             cv.waitKey()
             quit()
-
-
-read_elements(None)
