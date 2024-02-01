@@ -3,7 +3,12 @@ from time import time, sleep
 import pydirectinput as pdi
 
 
-# game_element format: (lane number(0-4), element type(0-2), UTC for input)
+# game_element format: (lane number(0-4), element type(0-2), decimal_for_height_location)
 def send_inputs(element_queue: Queue, bindings):
-    while True:
-        pass
+    element = element_queue.get()
+    print(element)
+
+
+
+
+

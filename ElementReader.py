@@ -68,5 +68,3 @@ def read_elements(element_queue: Queue):
                     if note_found:
                         element_queue.put((0, 2, idx/monitor_dimensions["height"]))
                         note_found = False
-
-            cv.waitKey()
