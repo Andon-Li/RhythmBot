@@ -35,9 +35,6 @@ def read_elements(element_queue: Queue):
         monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.15)
         while True:
             sct_img = sct.grab(monitor_dimensions)
-
-            cv.imshow("window", np.array(sct_img))
-
             release_note_counter = 0
             note_found = False
 
@@ -50,7 +47,7 @@ def read_elements(element_queue: Queue):
                         104 < v < 111:
                     note_found = True
 
-                # Orange Note ***not done****
+                # Orange Note
                 elif 0.045 < h < 0.055 and \
                         0.97 < s and \
                         224 < v < 235:
@@ -61,7 +58,6 @@ def read_elements(element_queue: Queue):
                         0.05 < s < 0.22 and \
                         210 < v:
                     if release_note_counter == 10:
-                        print("release note")
                         element_queue.put((1, 2, idx/monitor_dimensions["height"]))
                     else:
                         release_note_counter += 1
@@ -70,9 +66,7 @@ def read_elements(element_queue: Queue):
                 else:
                     release_note_counter = 0
                     if note_found:
-                        print("NOTE")
                         element_queue.put((0, 2, idx/monitor_dimensions["height"]))
                         note_found = False
 
             cv.waitKey()
-            quit()
