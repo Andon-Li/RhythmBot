@@ -3,7 +3,7 @@ from ElementReader import read_elements
 from InputManager import send_inputs
 
 if __name__ == '__main__':
-    element_queue = Queue(maxsize=100)
+    element_queue = Queue(maxsize=500)
 
     bindings = ['a', 's', 'd', 'm_l', 'm_r']
 

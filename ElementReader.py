@@ -32,11 +32,13 @@ def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec, height_dec):
 
 def read_elements(element_queue: Queue):
     with mss.mss() as sct:
-        monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.15)
+        monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.05)
         while True:
             sct_img = sct.grab(monitor_dimensions)
             release_note_counter = 0
             note_found = False
+
+            cv.imshow("window", np.array(sct_img))
 
             for idx, row in enumerate(sct_img.pixels):
                 h, s, v = colorsys.rgb_to_hsv(*row[0])
