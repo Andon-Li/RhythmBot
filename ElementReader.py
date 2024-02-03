@@ -38,8 +38,6 @@ def read_elements(element_queue: Queue):
             release_note_counter = 0
             note_found = False
 
-            cv.imshow("window", np.array(sct_img))
-
             for idx, row in enumerate(sct_img.pixels):
                 h, s, v = colorsys.rgb_to_hsv(*row[0])
 
@@ -70,3 +68,47 @@ def read_elements(element_queue: Queue):
                     if note_found:
                         element_queue.put((0, 2, idx/monitor_dimensions["height"]))
                         note_found = False
+
+
+def read_elements_headless():
+    with mss.mss() as sct:
+        monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.0)
+
+        release_note_counter = 0
+        note_found = False
+
+        while True:
+            sct_img = sct.grab(monitor_dimensions)
+            h, s, v = colorsys.rgb_to_hsv(*sct_img.pixels[0][0])
+
+            # Purple Note
+            if 0.9 < h < 0.92 and \
+                    0.95 < s and \
+                    104 < v < 111:
+                note_found = True
+
+            # Orange Note
+            elif 0.045 < h < 0.055 and \
+                    0.97 < s and \
+                    224 < v < 235:
+                note_found = True
+
+            # Release Note
+            elif 0.82 < h < 0.87 and \
+                    0.05 < s < 0.22 and \
+                    210 < v:
+                if release_note_counter == 10:
+                    print("RELEASE")
+                else:
+                    release_note_counter += 1
+
+            # Background
+            else:
+                release_note_counter = 0
+                if note_found:
+                    print("NOTE")
+                    note_found = False
+            print("-", end='')
+
+
+read_elements_headless()
