@@ -79,6 +79,11 @@ def new_read_func(element_queue: Queue):
                 else:
                     lift_element_counter += 1
 
+            # Background
+            else:
+                lift_element_counter = 0
+
+
 
 
 
