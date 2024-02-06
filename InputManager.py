@@ -7,4 +7,4 @@ import pydirectinput as pdi
 def send_inputs(element_queue: Queue, bindings):
     while True:
         element = element_queue.get()
-        pdi.press(bindings[element[1]])
+        print(element)

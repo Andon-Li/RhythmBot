@@ -39,7 +39,7 @@ def new_read_func(element_queue):
     element_has_passed = False
     next_element_type = None
     next_element_height = int('inf')
-    lift_element_counter = None
+    lift_element_counter = 0
 
     with mss.mss() as sct:
         lane_2_px_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.05)
@@ -47,94 +47,52 @@ def new_read_func(element_queue):
         highway_activity_left_dimensions = dec_to_px(sct, 1, 0.985, 0.276, 0.0, 0.008)
         highway_activity_right_dimensions = dec_to_px(sct, 1, 0.985, 0.731, 0.0, 0.008)
 
-        while not is_highway_active(sct, highway_activity_left_dimensions, highway_activity_right_dimensions):
-            sleep(0.1)
-
-        lane_2_capture = sct.grab(lane_2_px_dimensions)
-
-        for idx, row in enumerate(reversed(lane_2_capture.pixels)):
-            h, s, v = rgb_to_hsv(*row[0])
-
-            # Purple Note
-            if 0.9 < h < 0.92 and \
-                    0.95 < s and \
-                    104 < v < 111:
-                next_element_type = 0
-                if next_element_height < idx:
-                    next_element_height += int('inf')
-                    element_has_passed = True
-                break
-
-            # Orange Note
-            elif 0.045 < h < 0.055 and \
-                    0.97 < s and \
-                    224 < v < 235:
-                next_element_type = 1
-                if next_element_height < idx:
-                    next_element_height += int('inf')
-                    element_has_passed = True
-                break
-
-            # Lift Element
-            elif 0.82 < h < 0.87 and \
-                    0.05 < s < 0.22 and \
-                    210 < v:
-                if lift_element_counter == 10:
-                    next_element_type = 2
-                    if next_element_height < idx:
-                        next_element_height += int('inf')
-                        element_has_passed = True
-                    break
-                else:
-                    lift_element_counter += 1
-
-            # Background
-            else:
-                lift_element_counter = 0
-
-        if element_has_passed:
-            element_queue.put((next_element_type, perf_counter()))
-
-
-def read_elements(element_queue):
-    with mss.mss() as sct:
-        monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.05)
         while True:
-            sct_img = sct.grab(monitor_dimensions)
-            release_note_counter = 0
-            note_found = False
+            while not is_highway_active(sct, highway_activity_left_dimensions, highway_activity_right_dimensions):
+                sleep(0.1)
 
-            for idx, row in enumerate(sct_img.pixels):
+            lane_2_capture = sct.grab(lane_2_px_dimensions)
+
+            for idx, row in enumerate(reversed(lane_2_capture.pixels)):
                 h, s, v = rgb_to_hsv(*row[0])
 
                 # Purple Note
                 if 0.9 < h < 0.92 and \
                         0.95 < s and \
                         104 < v < 111:
-                    note_found = True
+                    next_element_type = 0
+                    if next_element_height < idx:
+                        next_element_height += int('inf')
+                        element_has_passed = True
+                    break
 
                 # Orange Note
                 elif 0.045 < h < 0.055 and \
                         0.97 < s and \
                         224 < v < 235:
-                    note_found = True
+                    next_element_type = 1
+                    if next_element_height < idx:
+                        next_element_height += int('inf')
+                        element_has_passed = True
+                    break
 
-                # Release Note
+                # Lift Element
                 elif 0.82 < h < 0.87 and \
                         0.05 < s < 0.22 and \
                         210 < v:
-                    if release_note_counter == 10:
-                        element_queue.put((1, 2, idx/monitor_dimensions["height"]))
+                    if lift_element_counter == 10:
+                        next_element_type = 2
+                        if next_element_height < idx:
+                            next_element_height += int('inf')
+                            element_has_passed = True
+                        break
                     else:
-                        release_note_counter += 1
+                        lift_element_counter += 1
 
                 # Background
                 else:
-                    release_note_counter = 0
-                    if note_found:
-                        element_queue.put((0, 2, idx/monitor_dimensions["height"]))
-                        note_found = False
+                    lift_element_counter = 0
 
-
-test_queue = Queue
-new_read_func(test_queue)
+            if element_has_passed:
+                element_queue.put((next_element_type, perf_counter()))
+                element_has_passed = False
