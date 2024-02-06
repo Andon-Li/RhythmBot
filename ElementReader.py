@@ -69,7 +69,7 @@ def new_read_func(element_queue: Queue):
                 next_element_height = idx
                 break
 
-            # Lift Note
+            # Lift Element
             elif 0.82 < h < 0.87 and \
                     0.05 < s < 0.22 and \
                     210 < v:
