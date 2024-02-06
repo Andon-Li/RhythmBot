@@ -35,7 +35,7 @@ def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
     return True
 
 
-def new_read_func(element_queue):
+def read_elements(element_queue):
     element_has_passed = False
     next_element_type = None
     next_element_height = int('inf')
