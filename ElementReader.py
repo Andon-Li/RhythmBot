@@ -1,5 +1,6 @@
+import time
 from multiprocessing import Queue
-from time import sleep
+from time import sleep, perf_counter
 import mss.tools
 from colorsys import rgb_to_hsv
 
@@ -34,9 +35,10 @@ def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
     return True
 
 
-def new_read_func(element_queue: Queue):
+def new_read_func(element_queue):
+    element_has_passed = False
     next_element_type = None
-    next_element_height = None
+    next_element_height = int('inf')
     lift_element_counter = None
 
     with mss.mss() as sct:
@@ -58,7 +60,9 @@ def new_read_func(element_queue: Queue):
                     0.95 < s and \
                     104 < v < 111:
                 next_element_type = 0
-                next_element_height = idx
+                if next_element_height < idx:
+                    next_element_height += int('inf')
+                    element_has_passed = True
                 break
 
             # Orange Note
@@ -66,7 +70,9 @@ def new_read_func(element_queue: Queue):
                     0.97 < s and \
                     224 < v < 235:
                 next_element_type = 1
-                next_element_height = idx
+                if next_element_height < idx:
+                    next_element_height += int('inf')
+                    element_has_passed = True
                 break
 
             # Lift Element
@@ -75,7 +81,10 @@ def new_read_func(element_queue: Queue):
                     210 < v:
                 if lift_element_counter == 10:
                     next_element_type = 2
-                    next_element_height = idx
+                    if next_element_height < idx:
+                        next_element_height += int('inf')
+                        element_has_passed = True
+                    break
                 else:
                     lift_element_counter += 1
 
@@ -83,11 +92,11 @@ def new_read_func(element_queue: Queue):
             else:
                 lift_element_counter = 0
 
+        if element_has_passed:
+            element_queue.put((next_element_type, perf_counter()))
 
 
-
-
-def read_elements(element_queue: Queue):
+def read_elements(element_queue):
     with mss.mss() as sct:
         monitor_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.05)
         while True:
@@ -127,4 +136,5 @@ def read_elements(element_queue: Queue):
                         note_found = False
 
 
-new_read_func(None)
+test_queue = Queue
+new_read_func(test_queue)
