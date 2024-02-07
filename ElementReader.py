@@ -4,6 +4,7 @@ from colorsys import rgb_to_hsv
 import cv2 as cv
 import numpy as np
 
+
 def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec, height_dec) -> dict:
     monitor = sct.monitors[monitor_number]
     top_px = int(monitor["height"]*top_dec + monitor["top"])
@@ -34,6 +35,7 @@ def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
     return True
 
 
+# game_element format: (lane number(0-4), element type(0-2), 'perf_counter' time of action)
 def read_elements(element_queue):
     element_has_passed = False
     next_element_type = None
