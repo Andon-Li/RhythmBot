@@ -127,8 +127,7 @@ def read_elements_headless():
                         next_element_type = 0
                         next_element_height -= 30000
                         element_has_passed = True
-                    else:
-                        next_element_height = idx
+                    next_element_height = idx
                     break
 
                 # Orange Note
@@ -139,21 +138,19 @@ def read_elements_headless():
                         next_element_type = 1
                         next_element_height -= 30000
                         element_has_passed = True
-                    else:
-                        next_element_height = idx
+                    next_element_height = idx
                     break
 
                 # Lift Element
                 elif 0.82 < h < 0.87 and \
                         0.03 < s < 0.22 and \
                         210 < v:
-                    if lift_element_counter == 7:
+                    if lift_element_counter == 9:
                         if next_element_height < idx:
                             next_element_type = 2
                             next_element_height -= 30000
                             element_has_passed = True
-                        else:
-                            next_element_height = idx
+                        next_element_height = idx
                         break
                     else:
                         lift_element_counter += 1
