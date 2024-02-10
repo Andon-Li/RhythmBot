@@ -5,10 +5,12 @@ import pydirectinput as pdi
 
 
 # game_element format: (lane number(0-4), element type(0-2), 'perf_counter' time of action)
-def send_inputs(element_queue: Queue, bindings):
+def send_inputs(element_queue: Queue, bindings, print_queue):
     while True:
-        element = element_queue.get()
-        while perf_counter() < element[2]:
-            sleep(0.01)
+        element_type, lane, time = element_queue.get()
+
+        while perf_counter() < time:
+            continue
 
         pdi.keyDown('d')
+        pdi.keyUp('d')
