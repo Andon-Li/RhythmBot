@@ -39,12 +39,12 @@ def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
 
 # game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
 def read_elements(element_queue):
-    element_height_in_previous_frame = 100
+    element_height_in_previous_frame = 300  # need to make dynamic
     lift_element_counter = 0
     offset = 0.93
 
     with mss.mss() as sct:
-        lane_2_px_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.05)
+        lane_2_px_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.1)
 
         highway_activity_left_dimensions = dec_to_px(sct, 1, 0.985, 0.277, 0.0, 0.008)
         highway_activity_right_dimensions = dec_to_px(sct, 1, 0.985, 0.731, 0.0, 0.008)
@@ -68,13 +68,21 @@ def read_elements(element_queue):
                 """
 
                 # Purple Note
-                if 0.85 < h < 0.92 and \
-                        0.95 < s and \
-                        104 < v < 111:
+                if 0.845 < h < 0.855 and \
+                        0.975 < s and \
+                        220 < v < 245:
                     if element_height_in_previous_frame < height:
                         element_queue.put((0, 2, time.perf_counter() + offset))
                     element_height_in_previous_frame = height
                     break
+
+                # if 0.85 < h < 0.92 and \
+                #         0.95 < s and \
+                #         104 < v < 111:
+                #     if element_height_in_previous_frame < height:
+                #         element_queue.put((0, 2, time.perf_counter() + offset))
+                #     element_height_in_previous_frame = height
+                #     break
 
                 # Orange Note
                 elif 0.045 < h < 0.055 and \

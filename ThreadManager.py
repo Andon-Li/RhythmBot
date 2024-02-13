@@ -14,6 +14,10 @@ if __name__ == '__main__':
     element_reader_process.start()
     input_manager_thread.start()
 
+
+    while True:
+        print(print_queue.get())
+
     element_reader_process.join()
     input_manager_thread.join()
 
