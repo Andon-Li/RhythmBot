@@ -39,7 +39,8 @@ def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
 
 # game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
 def read_elements(element_queue):
-    element_height_in_previous_frame = 300  # need to make dynamic
+    element_height_in_previous_frame = 500  # need to make dynamic
+    next_element_type = 0
     lift_element_counter = 0
     offset = 0.93
 
@@ -49,7 +50,7 @@ def read_elements(element_queue):
         highway_activity_left_dimensions = dec_to_px(sct, 1, 0.985, 0.277, 0.0, 0.008)
         highway_activity_right_dimensions = dec_to_px(sct, 1, 0.985, 0.731, 0.0, 0.008)
 
-        while True:
+        while True:  # GAME LOOP
             while not is_highway_active(sct, highway_activity_left_dimensions, highway_activity_right_dimensions):
                 sleep(0.1)
 
@@ -67,41 +68,60 @@ def read_elements(element_queue):
                 0.85 0.991 230.01
                 """
 
-                # Purple Note
-                if 0.845 < h < 0.855 and \
-                        0.975 < s and \
+                # Purple Note, top end of h can be reduced to 0.851
+                if 0.84 < h < 0.855 and \
+                        0.94 < s and \
                         220 < v < 245:
-                    if element_height_in_previous_frame < height:
-                        element_queue.put((0, 2, time.perf_counter() + offset))
-                    element_height_in_previous_frame = height
+                    if next_element_type:
+                        if element_height_in_previous_frame < height:
+                            element_queue.put((next_element_type, 2, perf_counter()+offset))
+                            next_element_type = 1
+                        element_height_in_previous_frame = height
+                    else:
+                        next_element_type = 1
                     break
-
-                # Old Purple Note
-                # if 0.85 < h < 0.92 and \
-                #         0.95 < s and \
-                #         104 < v < 111:
-                #     if element_height_in_previous_frame < height:
-                #         element_queue.put((0, 2, time.perf_counter() + offset))
-                #     element_height_in_previous_frame = height
-                #     break
 
                 # Orange Note
-                elif 0.045 < h < 0.055 and \
-                        0.97 < s and \
-                        224 < v < 235:
-                    if element_height_in_previous_frame < height:
-                        element_queue.put((1, 2, time.perf_counter() + offset))
-                    element_height_in_previous_frame = height
+                elif 0.1 < h < 0.12 and \
+                        0.9 < s and \
+                        240 < v:
+                    if next_element_type:
+                        if element_height_in_previous_frame < height:
+                            element_queue.put((next_element_type, 2, perf_counter()+offset))
+                            next_element_type = 2
+                        element_height_in_previous_frame = height
+                    else:
+                        next_element_type = 2
                     break
 
-                # Lift Element
+                # Purple Lift Element
                 elif 0.82 < h < 0.87 and \
                         0.03 < s < 0.22 and \
-                        210 < v:
+                        200 < v:
                     if lift_element_counter == 9:
-                        if element_height_in_previous_frame < height:
-                            element_queue.put((2, 2, time.perf_counter() + offset))
-                        element_height_in_previous_frame = height
+                        if next_element_type:
+                            if element_height_in_previous_frame < height:
+                                element_queue.put((next_element_type, 2, perf_counter() + offset))
+                                next_element_type = 3
+                            element_height_in_previous_frame = height
+                        else:
+                            next_element_type = 3
+                        break
+                    else:
+                        lift_element_counter += 1
+
+                # Orange Lift Element
+                elif (h < 0.03 or h > 0.97) and \
+                        0.06 < s < 0.2 and \
+                        170 < v:
+                    if lift_element_counter == 9:
+                        if next_element_type:
+                            if element_height_in_previous_frame < height:
+                                element_queue.put((next_element_type, 2, perf_counter() + offset))
+                                next_element_type = 4
+                            element_height_in_previous_frame = height
+                        else:
+                            next_element_type = 4
                         break
                     else:
                         lift_element_counter += 1
@@ -109,3 +129,10 @@ def read_elements(element_queue):
                 # Background
                 else:
                     lift_element_counter = 0
+
+            # For loop has not found an element
+            else:
+                if next_element_type:
+                    element_queue.put((next_element_type, 2, perf_counter() + offset))
+                    element_height_in_previous_frame = 500
+                    next_element_type = 0
