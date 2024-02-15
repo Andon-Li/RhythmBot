@@ -5,7 +5,7 @@ import pydirectinput as pdi
 
 
 # game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
-def send_inputs(element_queue: Queue, bindings, print_queue):
+def send_inputs(element_queue: Queue, bindings):
     while True:
         element_type, lane, time = element_queue.get()
 
@@ -14,10 +14,12 @@ def send_inputs(element_queue: Queue, bindings, print_queue):
 
         match element_type:
             case 1:
-                print_queue.put("Purple Note")
+                pdi.keyUp('d')
+                pdi.keyDown('d')
             case 2:
-                print_queue.put("Orange Note")
+                pdi.keyUp('d')
+                pdi.keyDown('d')
             case 3:
-                print_queue.put("Purple Lift Element")
+                pdi.keyUp('d')
             case 4:
-                print_queue.put("Orange Lift Element")
+                pdi.keyUp('d')

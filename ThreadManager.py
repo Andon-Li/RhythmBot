@@ -9,14 +9,10 @@ if __name__ == '__main__':
     bindings = ['a', 's', 'd', 'm_l', 'm_r']
 
     element_reader_process = Process(target=read_elements, args=(element_queue,), daemon=True)
-    input_manager_thread = Process(target=send_inputs, args=(element_queue, bindings, print_queue), daemon=True)
+    input_manager_thread = Process(target=send_inputs, args=(element_queue, bindings), daemon=True)
 
     element_reader_process.start()
     input_manager_thread.start()
 
-    while True:
-        print(print_queue.get())
-
     element_reader_process.join()
     input_manager_thread.join()
-

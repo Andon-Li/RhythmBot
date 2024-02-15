@@ -42,7 +42,7 @@ def read_elements(element_queue):
     element_height_in_previous_frame = 500  # need to make dynamic
     next_element_type = 0
     lift_element_counter = 0
-    offset = 0.93
+    offset = 0.45
 
     with mss.mss() as sct:
         lane_2_px_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.1)
@@ -60,7 +60,7 @@ def read_elements(element_queue):
                 h, s, v = rgb_to_hsv(*row[0])
 
                 """
-                Color samples for top of purple note
+                Color samples for top of purpldde note
                 0.85 0.983 240.98
                 0.847 0.996 223.13
                 0.847 0.983 233.07
