@@ -76,6 +76,7 @@ def read_elements(element_queue):
                     element_height_in_previous_frame = height
                     break
 
+                # Old Purple Note
                 # if 0.85 < h < 0.92 and \
                 #         0.95 < s and \
                 #         104 < v < 111:
