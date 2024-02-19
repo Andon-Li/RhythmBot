@@ -6,6 +6,7 @@ import pydirectinput as pdi
 
 # game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
 def send_inputs(element_queue: Queue, bindings):
+    pdi.PAUSE = 0.01
     while True:
         element_type, lane, time = element_queue.get()
 

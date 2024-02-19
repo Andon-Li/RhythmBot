@@ -42,7 +42,7 @@ def read_elements(element_queue):
     element_height_in_previous_frame = 500  # need to make dynamic
     next_element_type = 0
     lift_element_counter = 0
-    offset = 0.45
+    offset = 0.52
 
     with mss.mss() as sct:
         lane_2_px_dimensions = dec_to_px(sct, 1, 0.447, 0.493, 0.0, 0.1)
