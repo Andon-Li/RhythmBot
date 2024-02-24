@@ -63,3 +63,11 @@ Simply color categories will result in tiles existing where it is impossible. eg
 
 ##########################################################################
 cv.blur() includes masked out black pixels
+
+
+##############################################
+take scc of all lanes
+cast to np array
+np.diagonal()
+
+
