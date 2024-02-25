@@ -141,19 +141,55 @@ def highway_is_inactive(image, idx):
     return False
 
 
+def initialization():
+    def bresenham_line(x0, x1, dy):
+        output = []
+        dx = x1-x0
+        xi = 1
 
-# game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
-def read_elements(element_queue):
+        if dx < 0:
+            xi -= 1
+            dx *= -1
+
+        D = (2*dx)-dy
+        x = x0
+
+        for y in range(dy):
+            output.append((x, y))
+            if D > 0:
+                x = x + xi
+                D += 2*(dx-dy)
+            else:
+                D += 2*dx
+
+        return output
+
     with mss.mss() as sct:
         monitor = sct.monitors[1]
         monitor_height = monitor['height']
         monitor_width = monitor['width']
-    cap_left = int(monitor_width * 0.377)
-    cap_top = int(monitor_height * 0.4463)
-    cap_right = int(monitor_width * 0.628)
-    cap_bottom = int(monitor_height * 0.5463)
+    cap_left = int(monitor_width * 0.3771)
+    cap_top = int(monitor_height * 0.4445)
+    cap_right = int(monitor_width * 0.6277)
+    cap_bottom = int(monitor_height * 0.5445)
     cap_width = cap_right-cap_left
     cap_height = cap_bottom-cap_top
+
+    activity = bresenham_line(0, cap_width*0.0894, cap_height)
+
+    lane_1 = bresenham_line(cap_width*0.1, cap_width*0.1, cap_height)
+    lane_2 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
+    lane_3 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
+    lane_4 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
+    lane_5 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
+
+    return ((cap_left, cap_top, cap_right, cap_bottom),
+            (lane_1, lane_2, lane_3, lane_4, lane_5),
+            activity)
+
+# game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
+def read_elements(element_queue):
+    cap_region, lane_indices, activity_indices = initialization()
 
     highway_idx = np.concatenate((compute_line_idx(cap_width, cap_height, 0.0913, 0),
                                   compute_line_idx(cap_width, cap_height, 0.9066, 1)))
@@ -257,5 +293,3 @@ def read_elements(element_queue):
     #                 element_queue.put((next_element_type, 2, perf_counter() + offset))
     #                 element_height_in_previous_frame = 500
     #                 next_element_type = 0
-
-read_elements(None)

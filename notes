@@ -70,4 +70,71 @@ take scc of all lanes
 cast to np array
 np.diagonal()
 
+##########################################################################
+game_reader()
+Assumptions:
+    Fortnite is fullscreen on a 16:9 display.
+
+Capture Dimensions (zero indexed):
+    top = 480 / 1080 ~0.4444
+    bottom = 480+108 / 1080 ~0.5444
+
+
+initialization:
+    find dimensions of the display
+
+    based on the dimensions of the display, find the capture region.
+
+    based on the capture region, use the Bresenham Line Algorithm to find the indices to scan.
+
+
+Game Loop:
+    capture the display.
+    iterate through the indices of each lane:
+        for each index:
+            store the rgb color contained at that pixel
+            convert the rgb to hsv
+            check if the hsv matches any of the ranges for notes
+                purple
+                orange
+                purple lift
+                orange lift
+            if yes:
+                store the y value of the pixel that is inside the range.
+
+                break the loop so that processing will move to the next lane
+            if no:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
