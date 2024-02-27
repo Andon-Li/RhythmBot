@@ -85,64 +85,20 @@ def dec_to_px(sct, monitor_number, top_dec, left_dec, width_dec, height_dec) -> 
             "mon": monitor_number}
 
 
-def is_highway_active(sct, left_dimensions, right_dimensions) -> bool:
-    rows = sct.grab(left_dimensions).pixels + sct.grab(right_dimensions).pixels
-    for row in rows:
-        h, s, v = rgb_to_hsv(*row[0])
-        if h > 0.73 or h < 0.78 or \
-                s > 0.9 or \
-                v > 55 or v < 67:
-            return True
-    return True
-
-
-def find_color_range(image, idx):
-    maxh = 0
-    minh = 1
-    maxs = 0
-    mins = 1
-    maxv = 0
-    minv = 255
-    for index in idx:
-        x, y = index
-        r, g, b = image[y, x]
-        h, s, v = rgb_to_hsv(r, g, b)
-        if h > maxh:
-            maxh = h
-        if h < minh:
-            minh = h
-        if s > maxs:
-            maxs = s
-        if s < mins:
-            mins = s
-        if v > maxv:
-            maxv = v
-        if v < minv:
-            minv = v
-        print(f"{r}, {g}, {b}")
-    print(f"""
-    maxh{maxh}
-    minh{minh}
-    maxs{maxs}
-    mins{mins}
-    maxv{maxv}
-    minv{minv}
-    """)
-
-
-def highway_is_inactive(image, idx):
-    for index in idx:
-        x, y = index
+def is_highway_inactive(image, indices) -> bool:
+    for x, y in indices:
         h, s, v = rgb_to_hsv(*image[y, x])
-        if h < 0.7 or \
-            s < 0.4 or \
-            v < 58 or v > 110:
+        if h < 0.7 or h > 0.81 or \
+                s < 0.67 or \
+                v < 114 or v > 190:
             return True
     return False
 
 
 def initialization():
     def bresenham_line(x0, x1, dy):
+        x0 = int(x0)
+        x1 = int(x1)
         output = []
         dx = x1-x0
         xi = 1
@@ -155,7 +111,7 @@ def initialization():
         x = x0
 
         for y in range(dy):
-            output.append((x, y))
+            output.append((x, dy-y-1))
             if D > 0:
                 x = x + xi
                 D += 2*(dx-dy)
@@ -177,37 +133,35 @@ def initialization():
 
     activity = bresenham_line(0, cap_width*0.0894, cap_height)
 
-    lane_1 = bresenham_line(cap_width*0.1, cap_width*0.1, cap_height)
-    lane_2 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
-    lane_3 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
-    lane_4 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
-    lane_5 = bresenham_line(cap_width * 0.1, cap_width * 0.1, cap_height)
+    lane_1 = bresenham_line(cap_width * 0.0437, cap_width * 0.1206, cap_height)
+    lane_2 = bresenham_line(cap_width * 0.2537, cap_width * 0.2932, cap_height)
+    lane_3 = bresenham_line(cap_width * 0.4533, cap_width * 0.4574, cap_height)
+    lane_4 = bresenham_line(cap_width * 0.6445, cap_width * 0.6134, cap_height)
+    lane_5 = bresenham_line(cap_width * 0.8379, cap_width * 0.7714, cap_height)
 
     return ((cap_left, cap_top, cap_right, cap_bottom),
             (lane_1, lane_2, lane_3, lane_4, lane_5),
             activity)
 
+
 # game_element format: (element type(0-2), lane number(0-4), 'perf_counter' time of action)
 def read_elements(element_queue):
     cap_region, lane_indices, activity_indices = initialization()
 
-    highway_idx = np.concatenate((compute_line_idx(cap_width, cap_height, 0.0913, 0),
-                                  compute_line_idx(cap_width, cap_height, 0.9066, 1)))
-
-    # lane0_idx = compute_line_idx(cap_width, cap_height, )
-    # lane1_idx = compute_line_idx(cap_width, cap_height, )
-    # lane2_idx = compute_line_idx(cap_width, cap_height, )
-    # lane3_idx = compute_line_idx(cap_width, cap_height, )
-    # lane4_idx = compute_line_idx(cap_width, cap_height, )
-
-    camera = dxcam.create(region=(cap_left, cap_top, cap_right, cap_bottom))
+    camera = dxcam.create(region=cap_region)
     camera.start()
     while True:
         image = camera.get_latest_frame()
 
-        while highway_is_inactive(image, highway_idx):
-            print("hello")
-            sleep(0.3)
+        if is_highway_inactive(image, activity_indices):
+            continue
+
+        for lane_idx in lane_indices:
+            for x, y in lane_idx:
+                h, s, v = rgb_to_hsv(*image[y, x])
+                
+
+
 
 
     # with mss.mss() as sct:
