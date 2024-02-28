@@ -67,9 +67,9 @@ def is_highway_inactive(image, indices) -> bool:
 
 
 def matches_purple_note(h, s, v):
-    if 0.84 < h < 0.855 and \
+    if 0.84 < h < 0.865 and \
             0.94 < s and \
-            220 < v < 245:
+            105 < v < 140:
         return True
     return False
 
@@ -83,7 +83,7 @@ def matches_orange_note(h, s, v):
 
 
 def matches_purple_lift_note(h, s, v):
-    if 0.82 < h < 0.87 and \
+    if 0.82 < h < 0.88 and \
             0.03 < s < 0.22 and \
             200 < v:
         return True
