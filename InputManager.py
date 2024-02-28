@@ -13,14 +13,4 @@ def send_inputs(element_queue: Queue, bindings):
         while perf_counter() < time:
             continue
 
-        match element_type:
-            case 1:
-                pdi.keyUp('d')
-                pdi.keyDown('d')
-            case 2:
-                pdi.keyUp('d')
-                pdi.keyDown('d')
-            case 3:
-                pdi.keyUp('d')
-            case 4:
-                pdi.keyUp('d')
+        print(f"{element_type}, {lane}")

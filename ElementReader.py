@@ -159,7 +159,7 @@ def read_elements(element_queue):
             else:
                 if current_note_type:
                     element_queue.put((current_note_type, lane_num, perf_counter()+offset))
-
+                    current_note_height = 99999
 
     # with mss.mss() as sct:
     #     lane_capture_dimensions = dec_to_px(sct, 1, 0.447, 0.3927, 0.201, 0.1)
