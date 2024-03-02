@@ -42,11 +42,11 @@ def note_thinker(image, pixel_locs: tuple[int, int, int]) -> str:
 def main():
     song_map = []
     #            cent, edge, lift
-    lanes_pois = ((52, 75 , 68),
-                  (146, , 163),
-                  (234, 208, 216),
-                  (327 , 301, 308),
-                  (420, 397, 406))
+    lanes_pois = ((53, 74, 69),
+                  (140, 169, 162),
+                  (234, 265, 257),
+                  (327 , 304, 308),
+                  (420, 451, 404))
 
     camera = dxcam.create(region=(728, 579, 1201, 580))
     camera.start()

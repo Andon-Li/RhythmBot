@@ -105,36 +105,35 @@ Game Loop:
                 break the loop so that processing will move to the next lane
             if no:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#############################################
+inclusive ranges
+first pixel x = 0
+lane 1:
+top edge 11-75
+bottom edge 19-80
+lift 26-71
+sustain 53
+########
+lane 2:
+top edge 109-170
+bottom edge 111-174
+lift 119-165
+sustain 140
+########
+lane 3:
+top edge 206-269
+bottom edge 206-267
+lift 214-260
+sustain 234
+########
+lane 4
+top edge 303-367
+bottom edge 299-361
+lift 306-353
+sustain 327
+########
+lane 5
+top edge 401-463
+bottom edge 391-454
+lift 402-448
+sustain 420
