@@ -1,10 +1,11 @@
-from time import perf_counter
+from time import perf_counter, time
 import mss.tools
 from colorsys import rgb_to_hsv
 import cv2 as cv
 import numpy as np
 import pyautogui as pag
 import dxcam
+import csv
 
 
 def initialization():
@@ -98,7 +99,11 @@ def matches_orange_lift_note(h, s, v):
     return False
 
 
-def read_elements(element_queue):
+def main(element_queue):
+    with open(f'song_maps\\{time()}') as song_map:
+        map_writer = csv.writer(song_map)
+        map_writer.writerow(['delta type', 'note type', ])
+        pass
     current_note_type = 0
     current_note_height = 99999
 
@@ -112,6 +117,7 @@ def read_elements(element_queue):
     camera.start()
     while True:
         image = camera.get_latest_frame()
+        etime = perf_counter()
 
         if is_highway_inactive(image, activity_indices):
             continue
@@ -122,14 +128,14 @@ def read_elements(element_queue):
 
                 if matches_purple_note(h, s, v):
                     if y > current_note_height:
-                        element_queue.put((current_note_type, lane_num, perf_counter()+offset))
+                        element_queue.put((current_note_type, lane_num, etime+offset))
                         current_note_type = 1
                     current_note_height = y
                     break
 
                 elif matches_orange_note(h, s, v):
                     if y > current_note_height:
-                        element_queue.put((current_note_type, lane_num, perf_counter()+offset))
+                        element_queue.put((current_note_type, lane_num, etime+offset))
                         current_note_type = 2
                     current_note_height = y
                     break
@@ -137,7 +143,7 @@ def read_elements(element_queue):
                 elif matches_orange_lift_note(h, s, v):
                     if lift_note_counter == 9:
                         if y > current_note_height:
-                            element_queue.put((current_note_type, lane_num, perf_counter()+offset))
+                            element_queue.put((current_note_type, lane_num, etime+offset))
                             current_note_type = 3
                         current_note_height = y
                     else:
@@ -147,7 +153,7 @@ def read_elements(element_queue):
                 elif matches_purple_lift_note(h, s, v):
                     if lift_note_counter == 9:
                         if y > current_note_height:
-                            element_queue.put((current_note_type, lane_num, perf_counter()+offset))
+                            element_queue.put((current_note_type, lane_num, etime+offset))
                             current_note_type = 4
                         current_note_height = y
                     else:
@@ -158,7 +164,7 @@ def read_elements(element_queue):
                     lift_note_counter = 0
             else:
                 if current_note_type:
-                    element_queue.put((current_note_type, lane_num, perf_counter()+offset))
+                    element_queue.put((current_note_type, lane_num, etime+offset))
                     current_note_height = 99999
 
     # with mss.mss() as sct:
