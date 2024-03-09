@@ -137,3 +137,55 @@ top edge 401-463
 bottom edge 391-454
 lift 402-448
 sustain 420
+
+
+###################################
+3/3/24
+Final Approach (Hopefully)
+
+Initialization:
+    Instantiate dxcam Camera object
+
+    Find indices
+
+    Create tuple of tuple containing indices of 10
+    (Future) Use bresenham's line algorit
+
+
+
+Game Loop
+    take a screenshot
+    record time of screenshot
+    FOR EACH LANE:
+        Iterate over center lane:
+            If pixel is orange or purple:
+                note found
+            If pixel is white:
+                If pixel at corresponding y value on edge line is white:
+                    pixel is edge or lift
+                else:
+                    pixel is sustain
+
+
+
+indices data structure
+indices: np array
+    lane lines: np array
+        lane line: np array
+            indexes: {y, x} dictionary, y value is key, x value is value.
+
+
+center lane pixel values(relative to the capture) y=0, y =99
+lane1 82, 52
+lane2 156, 140
+lane3 234, 234
+lane4 331, 327
+lane5 388, 418
+
+edge lane pixel values(relative to the capture) y=0, y=99
+lane1 97, 68
+lane2 139, 122
+lane3 218, 216
+lane4 296, 310
+lane5 375, 406
+
