@@ -1,3 +1,4 @@
+from multiprocessing import Queue
 import os
 from time import perf_counter_ns
 import csv
@@ -5,19 +6,53 @@ from colorsys import rgb_to_hsv
 import dxcam
 import numpy as np
 
+
 class Lane:
-    def __init__(self, num: int):
-        self.id = num
+    def __init__(self):
         self.latest_note_type = 0
-        self.latest_note_height = 999
+        self.latest_note_height = 0
         self.pois = None
 
     def set_pois(self, pois):
         self.pois = pois
         return self
 
-    def note_search(self):
+    def note_search(self, image):
+        output_type = 0
+        white_px_counter = 0
+        for y, x in self.pois:
+            match color_match(*rgb_to_hsv(*image[y, x])):
+                case 1:
+                    if y < self.latest_note_height - 2:
+                        output_type = self.latest_note_type
+                    self.latest_note_type = 1
+                    self.latest_note_height = y
+                    break
 
+                case 2:
+                    if y < self.latest_note_height - 2:
+                        output_type = self.latest_note_type
+                    self.latest_note_type = 2
+                    self.latest_note_height = y
+                    break
+
+                case 3:
+                    if white_px_counter == 9:
+                        if y < self.latest_note_height - 2:
+                            output_type = self.latest_note_type
+                        self.latest_note_type = 3
+                        self.latest_note_height = y
+                        break
+                    else:
+                        white_px_counter += 1
+
+                case 0:
+                    white_px_counter = 0
+
+        if output_type:
+            self.latest_note_height = 0
+            return output_type
+        return 0
 
 
 def line_algo(x0: int, x1: int, y0: int = 0, y1: int = 99) -> np.array:
@@ -43,37 +78,39 @@ def line_algo(x0: int, x1: int, y0: int = 0, y1: int = 99) -> np.array:
     return np.flipud(np.array(output))
 
 
-def color_match(h, s, v):  # returns (height of element, type of element)
+def color_match(h, s, v):
     # Purple Note
-    if < h < and < s < and < v < :
+    if 0.825 < h < 0.877 and 0.93 < s and 109 < v < 130:
         return 1
+
     # Orange Note
-    if < h < and < s < and < v < :
+    if 0.11 < h < 0.12 and 0.88 < s and 242 < v:
         return 2
-    # Lift Note
-    if  and < s < and < v < :
+
+    #  Lift Note
+    if 0.09 < h and s < 0.07 and 230 < v:
         return 3
 
     return 0
 
 
 def read_screen():
-    lane1 = Lane(1).set_pois(line_algo(97, 68))
-    lane2 = Lane(2).set_pois(line_algo(139, 122))
-    lane3 = Lane(3).set_pois(line_algo(218, 216))
-    lane4 = Lane(4).set_pois(line_algo(296, 310))
-    lane5 = Lane(5).set_pois(line_algo(375, 406))
+    lane1 = Lane().set_pois(line_algo(61, 29))
+    lane2 = Lane().set_pois(line_algo(139, 122))
+    lane3 = Lane().set_pois(line_algo(218, 216))
+    lane4 = Lane().set_pois(line_algo(296, 310))
+    lane5 = Lane().set_pois(line_algo(375, 406))
     lanes = [lane1, lane2, lane3, lane4, lane5]
 
     camera = dxcam.create(region=(728, 482, 1202, 582))
     camera.start()
-    image = camera.get_latest_frame()
-    shot_time = perf_counter_ns()
+    while True:
+        image = camera.get_latest_frame()
+        shot_time = perf_counter_ns()
 
-    for lane in lanes:
-        for y, x in lane.pois:
-            if note_type := color_match(*rgb_to_hsv(*image[y, x])):
-                pas
-
+        for number, lane in enumerate(lanes):
+            if note_type := lane.note_search(image):
+                # note_queue.put((note_type, number, shot_time))
+                print(note_type, number, shot_time)
 
 read_screen()
