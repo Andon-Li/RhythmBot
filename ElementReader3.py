@@ -113,4 +113,5 @@ def read_screen():
                 # note_queue.put((note_type, number, shot_time))
                 print(note_type, number, shot_time)
 
+
 read_screen()
